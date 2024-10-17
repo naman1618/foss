@@ -14,7 +14,6 @@
 
 <br>
 <br>
-<br>
 
 
 ## Reproducible Scientific Computing
@@ -31,12 +30,11 @@
 <br>
 <br>
 <br>
-
-As the graphic below suggests, _Reproducibility_ is a spectrum of sharing behaviors. 
+<br>
 
 <figure markdown>
-  <a target="blank" rel="open science">![open science](../assets/reproducibility-spectrum.png){ width="600" } </a>
-    <figcaption> [Peng 2011](https://science.sciencemag.org/content/334/6060/1226)</figcaption>
+  <a target="blank" rel="open science">![open science](assets/reproducibility-spectrum.png){ width="600" } </a>
+    <figcaption>Source: Peng, RD Reproducible Research in Computational Science Science (2011): 1226–1227 via [Reproducible Science Curriculum](http://reproducible-science-curriculum.github.io/bosc2015/#/15)</figcaption>
 </figure>
 
 <br>
@@ -57,7 +55,7 @@ As the graphic below suggests, _Reproducibility_ is a spectrum of sharing behavi
 
 #### Advantages 
 
-- Inuitive and easy to navigate a GUI and click buttons
+- Intuitive and easy to navigate a GUI and click buttons
 
 #### Limitations
 
@@ -115,61 +113,155 @@ As the graphic below suggests, _Reproducibility_ is a spectrum of sharing behavi
 
 <br>
 <br>
-<br>
-<br>
+
+
 
 ## Scripting Languages
 
-The two most common open-source scripting languages (for science) are Python and R.
+The most common open-source scripting languages (for science) are Python, R, and shell (Bash). 
 
 <figure style="display: flex; justify-content: center;">
-    <a href="https://www.python.org/"><img src="https://raw.githubusercontent.com/CyVerse-learning-materials/foss/mkdocs/docs/assets/python_logo.png" alt="python" style="width: 150px; margin-right: 15px;"></a>
-    <a href="https://www.r-project.org/"><img src="https://raw.githubusercontent.com/CyVerse-learning-materials/foss/mkdocs/docs/assets/r_logo.jpeg" alt="r" style="width: 150px; margin-right:"></a>
+    <a href="https://www.python.org/"><img src="../assets/python_logo.png" alt="python" style="width: 150px; margin-right: 15px;"></a>
+    <a href="https://www.r-project.org/"><img src="../assets/r_logo.jpeg" alt="r" style="width: 150px; margin-right:"></a>&nbsp;&nbsp;&nbsp;&nbsp
+    <a href=""><img src="../assets/bash_logo.png" alt="bash" style="width: 150px; margin-right: 15px;"></a>
 </figure>
 
-Both languages consist of base software (Python Standard Library or R Base Package) and MANY additional packages that can be downloaded and installed for increased capabilities. 
+If you recall from [lesson 4 _How to Talk to Computers_](/04_talk_to_computer/#shell-script), we ran a shell script to back up and compress files. The following admonitions show the original shell script as well as the same instructions in Python and R. Scripting languages are simply different ways to instruct a computer. 
 
-<br>
-<br>
-<br>
-<br>
+??? Tip "Shell Script"
 
-## Software Installation
+    ```
+    #use Bash shell to run the following commands
+    #!/bin/bash
 
-When you download and install software onto your computer, it will typically install it in a set of specific directories that we call the **System Path**.
+    ## Variables
+    #the directory you want to back up (e.g., shell-lesson-data)
+    SOURCE_DIR=$(find / -type d -name "shell-lesson-data" 2>/dev/null) # Note: if you are working on your computer, this will look in every folder. Be careful with this line!
 
-### System Path
+    #location where the backup will be stored
+    BACKUP_DIR="$HOME/Backup"
 
-In the context of computing, the **system path**, often referred to simply as **PATH**, is the set of directories in which the operating system looks for executable files when a command is issued. 
+    #used to create a unique name for each backup based on the current date and time
+    TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 
-When you go to launch an application by clicking on a desktop icon or with a CLI command, the computer will search for the application within the PATH directories. If it finds the executable, it will launch. 
+    # name of the compressed backup file
+    ARCHIVE_NAME="backup_$TIMESTAMP.tar.gz"
 
-!!! Tip "Find the PATH on your computer"
 
-    In Linux and Mac Terminal
+    # Create backup directory if it doesn't exist
+    mkdir -p "$BACKUP_DIR"
 
-    `echo $PATH`
+    # Create a compressed archive of the source directory
+    tar -czf "$BACKUP_DIR/$ARCHIVE_NAME" -C "$SOURCE_DIR" .
 
-    <br>
+    # Output the result
+    echo "Backup of $SOURCE_DIR completed!"
+    echo "Archive created at $BACKUP_DIR/$ARCHIVE_NAME"
+    ```
 
-    In Windows Terminal
+??? Tip "Python"
 
-    `echo %PATH%`
+    ```
+    import os
+    import subprocess
+    import shutil
+    from datetime import datetime
 
-<br>
-<br>
+    # Variables
+    # Find the source directory (e.g., shell-lesson-data)
+    def find_source_dir():
+        try:
+            # Run the 'find' command to locate the directory
+            result = subprocess.run(['find', '/', '-type', 'd', '-name', 'shell-lesson-data'], 
+                                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+            source_dir = result.stdout.strip()
+            return source_dir
+        except Exception as e:
+            print(f"Error finding directory: {e}")
+            return None
 
-<figure markdown="span">
-    <iframe width="553" height="280" src="https://www.youtube.com/embed/43zdpmEu4lE" title="What is the system path? // Developer Fundamentals" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-    <vidcaption> <br>Nice and Short Video Describing the PATH.</vidcaption> 
-</figure>
+    # Set the backup directory to a folder called Backup in the home directory
+    backup_dir = os.path.join(os.path.expanduser("~"), "Backup")
 
-<br>
-<br>
+    # Create a unique timestamp for the backup
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-!!! Warning "The PATH prefers one version of any given software."
+    # Create the archive name with the timestamp
+    archive_name = f"backup_{timestamp}.tar.gz"
 
-<br>
+    # Ensure backup directory exists
+    os.makedirs(backup_dir, exist_ok=True)
+
+    # Find source directory
+    source_dir = find_source_dir()
+
+    if source_dir:
+        # Create the compressed archive using tar
+        archive_path = os.path.join(backup_dir, archive_name)
+        try:
+            subprocess.run(['tar', '-czf', archive_path, '-C', source_dir, '.'], check=True)
+            print(f"Backup of {source_dir} completed!")
+            print(f"Archive created at {archive_path}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error creating archive: {e}")
+    else:
+        print("Source directory not found!")
+    ```
+
+
+??? Tip "R"
+
+    ```
+    # Load necessary libraries
+    library(lubridate)
+
+    # Variables
+    # Function to find the source directory (e.g., shell-lesson-data)
+    find_source_dir <- function() {
+    result <- system("find / -type d -name 'shell-lesson-data' 2>/dev/null", intern = TRUE)
+    if (length(result) > 0) {
+        return(result[1])  # Return the first match, if any
+    } else {
+        return(NULL)
+    }
+    }
+
+    # Backup directory
+    backup_dir <- file.path(Sys.getenv("HOME"), "Backup")
+
+    # Create a unique timestamp for the backup
+    timestamp <- format(now(), "%Y-%m-%d_%H-%M-%S")
+
+    # Name of the compressed archive
+    archive_name <- paste0("backup_", timestamp, ".tar.gz")
+
+    # Ensure backup directory exists
+    if (!dir.exists(backup_dir)) {
+    dir.create(backup_dir, recursive = TRUE)
+    }
+
+    # Find the source directory
+    source_dir <- find_source_dir()
+
+    if (!is.null(source_dir)) {
+    # Create the compressed archive using tar
+    archive_path <- file.path(backup_dir, archive_name)
+    tar_command <- paste("tar -czf", shQuote(archive_path), "-C", shQuote(source_dir), ".")
+    
+    # Run the tar command
+    system(tar_command)
+    
+    cat("Backup of", source_dir, "completed!\n")
+    cat("Archive created at", archive_path, "\n")
+    } else {
+    cat("Source directory not found!\n")
+    }
+    ```
+
+
+
+Each language consist of base software (Python Standard Library or R Base Package) and MANY additional packages that can be downloaded and installed for increased capabilities. 
+
 <br>
 <br>
 <br>
@@ -191,25 +283,68 @@ A computing environment is the combination of hardware, software, and network re
 <br>
 <br>
 
-#### The scripts you create:
 
-* Were designed to work in _your_ specific computing environment 
-* May not work on your computer in the future, because your computing enviroment will probably change (eg., updated software versions)
-* May not work on someone else's computer because their computing environment is different
+!!! Warning "**!!Very Important!!**" 
 
-<br>
-<br>
-<br>
+    #### The scripts you create:
+
+    * Were designed to work in _your_ specific computing environment 
+    * May not work on someone else's computer because their computing environment is different
+    * May not work on your computer in the future, because your computing enviroment will probably change (eg., updated software versions)
+
 <br>
 
 ### Software Dependency Hell
 
-Sometimes, it can be _nearly impossible_ to get your computing environment correct enough to run someone else's code.
+Sometimes, it can be _nearly impossible_ to get your computing environment correct enough to run someone else's code. 
 
-This can caused by incorrect software versions of the packages you are using or their dependencies.
+This can be caused by incorrect software versions of the packages you are using or their dependencies.
 
-Updating software installed in the **system path** - to make new code work - can break old code!
+<span style="font-size:1.3em;">_Don't Dispair! There are solutions to avoid software dependency hell and ensure reproducibility from one computer to another_</span>
 
+
+<br>
+<br>
+
+
+## Software Installation
+
+
+
+When you download and install software onto your computer, it will typically install it in a set of specific directories that we call the **System Path**.
+
+### System Path
+
+In the context of computing, the **system path**, often referred to simply as **PATH**, is the set of directories in which the operating system looks for executable files when a command is issued. 
+
+When you go to launch an application by clicking on a desktop icon or with a CLI command, the computer will search for the application within the PATH directories. If it finds the executable, it will launch. 
+
+!!! Tip "Find the PATH on your computer"
+
+    In Linux and Mac Terminal
+
+    `echo $PATH`
+
+    <br>
+
+    In Windows Terminal
+
+    `$env:PATH`
+
+<br>
+<br>
+
+<figure markdown="span">
+    <iframe width="553" height="280" src="https://www.youtube.com/embed/43zdpmEu4lE" title="What is the system path? // Developer Fundamentals" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <vidcaption> <br>Nice and Short Video Describing the PATH.</vidcaption> 
+</figure>
+
+<br>
+<br>
+
+!!! Warning "The PATH prefers one version of any given software."
+
+<br>
 <br>
 <br>
 <br>
@@ -218,7 +353,7 @@ Updating software installed in the **system path** - to make new code work - can
 
 One solution to software dependency hell is to use an Environment Manager
 
-An environment manager allows you to create software installation directories (similar to PATH) that are **isolated** your computer's PATH. You can create unique environments and install specific software version to run specific scripts.
+An environment manager allows you to create software installation directories (similar to PATH) that are **isolated** from your computer's PATH. You can create unique environments and install specific software version to run specific scripts.
 
 <br>
 
@@ -232,10 +367,15 @@ An environment manager allows you to create software installation directories (s
 
 <figure markdown>
   <a target="blank" rel="open science">![open science](assets/envs.png){ width="450" } </a>
-    <figcaption></figcaption>
+    <figcaption>Conceptual Graphic 1</figcaption>
 </figure>
-<br>
-<br>
+
+<figure markdown>
+  <a target="blank" rel="open science">![open science](assets/virtual_envs.png){ width="400" } </a>
+    <figcaption>Conceptual Graphic 2</figcaption>
+</figure>
+
+
 
 ### :simple-r: [Renv](https://rstudio.github.io/renv/articles/renv.html)
 
@@ -245,41 +385,6 @@ An environment manager allows you to create software installation directories (s
 <br>
 <br>
 
-## Package Managers
-
-A software tool to find, download, and install software packages to PATH or virtual environment 
-
-### :simple-anaconda: [Conda](https://docs.conda.io/en/latest/)
-**Software:** Python, R, Django, Celery, PostgreSQL, nginx, Node.js, Java programs, C and C++, Perl, and command line tools
-
-**Repository:** [Conda-Forge](https://conda-forge.org/). 
-
-
-<br>
-
-### :simple-python: [Pip](https://pypi.org/project/pip/)
-
-**Software:** python 
-
-**Repository:** [PyPi](https://pypi.org/)
-
-**Note:** Pip can be used together with Conda environment manager. 
-
-<br>
-
-### :simple-r: R
-With the R language, a package manager is built directly into the R Base Package. 
-```
-install.packages('ggplot2')
-```
-
-**Repository:**  [R Comprehensive R Archive Network (CRAN)](https://cran.r-project.org/)
-  
-
-
-
-<br>
-<br>
 
 ## Sharing your Environment with Colleagues
 
@@ -293,80 +398,158 @@ The general sharing workflow:
 
 3. Colleagues create an empty environment on their computer and populate it with the contents of the _environment file_
 
+
+??? Tip ":simple-anaconda: Conda to Share Environment"
+
+    ### :simple-anaconda: [Conda](https://docs.conda.io/en/latest/)
+
+    1. Export your Conda Environment
+    ```
+    conda env export > my_conda_env.yml
+    ```
+
+    2. Share the .yml file through Github 
+
+
+    3. Reproduce the Environment on a Different Computer
+    ```
+    conda env create --file environment.yml
+    ```
+    !!! Success "Conda exports your Pip environment as well"
+        Exporting your environment using Conda (`conda env export > my_conda_env.yml`) will **ALSO** export your pip environment!
+
+??? Tip ":simple-python: Pip to Share Environment"
+
+    ### :simple-python: Python
+
+    1. Export python libraries present in your environment
+    ```
+    pip3 freeze > requirements.txt 
+    ```
+
+    2. Share the `requirements.txt` on Github
+
+    3. Reproduce the Environment on a Different Computer
+    ```
+    pip install -r requirements.txt
+    ```
+
+??? Tip ":simple-r: Renv to Share Environment"
+
+    ### :simple-r: [Renv](https://rstudio.github.io/renv/articles/renv.html)
+
+    1. Create an isolated environment
+    ```
+    renv::init()
+    ```
+
+    2. Export R packages to the renv.lock file
+    ```
+    renv:snapshot()
+    ```
+
+    3. Share the `renv.lock`, `.Rprofile`, `renv/settings.json` and `renv/activate.R` files to Github
+
+    4. Reproduce the Environment on a Different Computer
+    ```
+    renv::restore()
+    ```
+
+<br>
 <br>
 
-### :simple-anaconda: [Conda](https://docs.conda.io/en/latest/)
-
-1. Export your Conda Environment
-   ```
-   conda env export > my_conda_env.yml
-   ```
-
-2. Share the .yml file through Github 
 
 
-3. Reproduce the Environment on a Different Computer
-   ```
-   conda env create --file environment.yml
-   ```
-!!! Success "Conda exports your Pip environment as well"
-    Exporting your environment using Conda (`conda env export > my_conda_env.yml`) will **ALSO** export your pip environment!
-<br>
-<br>
+## Package Managers
 
-### :simple-python: Python
-
-1. Export python libraries present in your environment
-   ```
-   pip3 freeze > requirements.txt 
-   ```
-
-2. Share the `requirements.txt` on Github
-
-3. Reproduce the Environment on a Different Computer
-   ```
-   pip install -r requirements.txt
-   ```
+A software tool to find, download, and install software packages to PATH or virtual environment 
 
 
-<br>
-<br>
+??? Tip ":simple-anaconda: Conda"
 
-### :simple-r: [Renv](https://rstudio.github.io/renv/articles/renv.html)
+    ### :simple-anaconda: [Conda](https://docs.conda.io/en/latest/)
+    **Software:** Python, R, Django, Celery, PostgreSQL, nginx, Node.js, Java programs, C and C++, Perl, and command line tools
 
-1. Create an isolated environment
-   ```
-   renv::init()
-   ```
+    **Repository:** [Conda-Forge](https://conda-forge.org/). 
 
-2. Export R packages to the renv.lock file
-   ```
-   renv:snapshot()
-   ```
-3. Share the `renv.lock`, `.Rprofile`, `renv/settings.json` and `renv/activate.R` files to Github
 
-4. Reproduce the Environment on a Different Computer
-   ```
-   renv::restore()
-   ```
+??? Tip ":simple-python: Pip"
 
-<br>
-<br>
+    ### :simple-python: [Pip](https://pypi.org/project/pip/)
+
+    **Software:** python 
+
+    **Repository:** [PyPi](https://pypi.org/)
+
+    **Note:** Pip can be used together with Conda environment manager. 
+
+
+??? Tip ":simple-r: R"
+
+    ### :simple-r: R
+    With the R language, a package manager is built directly into the R Base Package. 
+    ```
+    install.packages('ggplot2')
+    ```
+
+    **Repository:**  [R Comprehensive R Archive Network (CRAN)](https://cran.r-project.org/)
 
 ---
 
 <br>
 <br>
-<br>
-<br>
 
----
 
-## Reproducibility Tutorial
 
-<br>
+
+## Reproducibility Tutorial Using Conda
+
+
+
+### Set Up
+
+!!! Note "OS of choice"
+
+    To get everyone on the same page, we will do this exercise together using the Linux terminal in Github Codespaces. 
+    
+    However, if you'd like to use your own computer feel free to! If you're on Mac or Linux, open your terminal; If you're on Windows, please use the Windows Subsystem for Linux (WSL) so you can follow along. 
+
+    ??? Tip "How to Scroll in Cyverse (Tmux) Cloud Shell"
+        
+        If you're using the Cyverse Cloud Shell, you can scroll up and down by pressing `Ctrl + b` and then `[` to enter scroll mode. You can then use the arrow keys to scroll up and down. Press `q` to exit scroll mode.
+
+        !!! Note "The CLI in CyVerse is controlled with [Tmux](https://en.wikipedia.org/wiki/Tmux), a software that allows to "window" the CLI; Here is a [cheat sheet](https://tmuxcheatsheet.com/) that will teach you more Tmux tricks!"
+
+<br/>
+
+### Launch Github Codespaces
+
+**1** Go to this [Github repository](https://github.com/cyverse-learning-materials/foss_conda_lesson) and Fork it (i.e., make a copy of it in your Github account).
+
+<figure markdown>
+  <a target="blank" rel="open science">![open science](assets/conda_lesson1.png){ width="550" } </a>
+    <figcaption></figcaption>
+</figure>
+
+**2** Click on the green "Code" button and select "Create Codespaces on main"
+
+<figure markdown>
+  <a target="blank" rel="open science">![open science](assets/conda_lesson2.png){ width="550" } </a>
+    <figcaption></figcaption>
+</figure>
+
+**3** After a few moments, you will be taken to a new browser window with a Linux terminal.
+
+<figure markdown>
+  <a target="blank" rel="open science">![open science](assets/conda_lesson3.png){ width="550" } </a>
+    <figcaption></figcaption>
+</figure>
+
+<br/>
 
 ### Installing Conda
+
+**If you are using Codespaces, Conda is already installed.**
 
 When you download and install Conda it comes in two different flavors: 
 
@@ -378,6 +561,8 @@ When you download and install Conda it comes in two different flavors:
   <a href="https://medium.com/hydroinformatics/getting-started-with-conda-environment-332182d1e937" target="blank" rel="conda">![conda](https://miro.medium.com/v2/resize:fit:720/format:webp/0*ElVyaAsDHkIpNgxk.png) </a>
     <figcaption> Conda, Miniconda, and Anaconda. <br> [Taken from *Getting Started with Conda, Medium*](https://medium.com/hydroinformatics/getting-started-with-conda-environment-332182d1e937). </figcaption>
 </figure>
+
+
 
 ??? Tip "Installing Conda"
 
@@ -405,8 +590,6 @@ When you download and install Conda it comes in two different flavors:
 
     Conda should now be installed and can be used to install other necessary packages! 
 
-<br>
-
 ??? tip "Tip: slow Conda? Try Mamba."
 
     Conda is known to take time processing some software installation. A solution is to use [Mamba](https://github.com/mamba-org/mamba), a reimplementation of Conda in C++ for quicker queries and installations. Mamba is then invoked by using `mamba` instead of `conda` (whilst keeping options and the rest of the command synthax the same). 
@@ -416,42 +599,32 @@ When you download and install Conda it comes in two different flavors:
 <br>
 <br>
 <br>
-<br>
-<br>
-
-
-### Conda on Cyverse
-
-!!! Note "OS of choice"
-
-    This tutorial will be performed using the [CyVerse CLI (Command Line Interface)](https://de.cyverse.org/apps/de/5f2f1824-57b3-11ec-8180-008cfa5ae621) which is a Linux Command Line. This requires a [Cyverse account](https://user.cyverse.org/signup). 
-    
-    However, if you'd like to use your own computer feel free to! If you're on Mac or Linux, open your terminal; If you're on Windows, please use the Windows Subsystem for Linux (WSL) so you can follow along. 
-
-    ??? Tip "How to Scroll in Cyverse (Tmux) Cloud Shell"
-        
-        If you're using the Cyverse Cloud Shell, you can scroll up and down by pressing `Ctrl + b` and then `[` to enter scroll mode. You can then use the arrow keys to scroll up and down. Press `q` to exit scroll mode.
-
-        !!! Note "The CLI in CyVerse is controlled with [Tmux](https://en.wikipedia.org/wiki/Tmux), a software that allows to "window" the CLI; Here is a [cheat sheet](https://tmuxcheatsheet.com/) that will teach you more Tmux tricks!"
-
-<br>
-<br>
 
 ### Environment Management with Conda
 
-When you start a Cyverse Cloud shell, the prompt will look something like this: 
+When you start a Codespaces terminal, the prompt will look something like this: 
 
 ```
-(base) jovyan@a12b272e0:/home/user/data-store$
+@jeffgillan ➜ /workspaces/foss_conda_lesson (main) $
 ```
 <br>
-Miniconda has already been pre-installed, and by default, you are started in a base Conda directory (base)
 
+Type the following command to see the current conda environment. 
+
+```
+conda info
+```
 <br>
 
+Initialize conda by running the following commands. 
 
+```
+conda init
+exec $SHELL
+```
+<br>
 
-View the list of conda environments
+View the list of conda environments. There should only be one environment called `base`.
 ```
 conda env list
 ```
@@ -493,7 +666,6 @@ conda list
 <br>
 <br>
 <br>
-<br>
 
 ### Package management with Conda
 
@@ -505,20 +677,18 @@ conda install python=3.9
 
 <br>
 
-View the new software that has been install 
+View the new software that has been installed. Notice the version of Python is now 3.9. while the base is 3.12
 ```
 conda list
 ```
 
-
-<br>
 <br>
 <br>
 
-Install Salmon and FastQC (genomics software) using Conda
+Install Salmon (genomics software) using Conda
 
 ```
-conda install -c bioconda salmon fastqc
+conda install -c bioconda salmon 
 ```
 
 <br>
@@ -536,56 +706,50 @@ conda install -c bioconda salmon fastqc
 Export all of the software in your custom environment to a file
 
 ```
-conda env export > myenv.yml
+conda env export --no-builds > myenv.yml
 ```
 <br>
-Let's view the contents of the .yml file
+Let's view the contents of the .yml file. It should contain all the software you installed in the environment. This `myenv.yml` file can be shared with a colleague so they can reproduce the same environment on their computer.  
 ```
 nano myenv.yml
 ```
 <br>
 
 
-Now we are going to pretend that we are reproducing a conda environment from a .yml file shared by a collegue.
-<br>
-
-Change the `name` of the environement within the .yml file from `myenv` to `myenv2`
-
-
-<br>
-Create a new environment and populate it with the .yml environment file
+Reproduce someone else's environment with `mandelbrot.yml` environment file located in the repository.
 
 ```
-conda env create --file myenv2.yml
+conda env create --file mandelbrot.yml
 ```
 
-
-<br>
-<br>
-<br>
 <br>
 
-### Package management with Pip
+Activate the environment to use the software installed in the environment. 
 
-Pip works similarly to Conda, as Pip is the package management supported by the Python Software foundation. If you use Python for your work it is likely you have installed packages using Pip.
-
-We only have to install a single package required for this tutorial, MultiQC. To install MultiQC using Pip, do:
-
-```
-pip install multiqc
+``` 
+conda activate mandelbrot
 ```
 
-Similar to Conda, you can export your pip environment by doing
-
-```
-pip3 freeze > requirements.txt
-```
 <br>
 
-!!! Note "Why `pip3`?"
-    `pip3 freeze > requirements.txt` is used to export the pip environment such that it is readable for Python 3. If you want to export an environment for Python 2, you can use `pip freeze > requirements.txt`.
+Look at the software installed in the environment. 
+
+```
+conda list
+```
+
 <br>
+
+Run a python script that generates a Mandelbrot set 
+
+```
+python3 mandelbrot.py
+``` 
+
+
 <br>
-<br>
-<br>
+
+
+
+
 
