@@ -2,13 +2,6 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11105956.svg)](https://doi.org/10.5281/zenodo.11105956)
 
-
-Documentation for CyVerse Learning's Foundations of Open Science Skills (FOSS) course. 
-
-Course will take place Sept. 5 - Nov. 21, 2024, online, Every Thursday 11 am - 12:30 pm Arizona time
-
-See the schedule at https://foss.cyverse.org/schedule/
-
 ## Build
 
 To build the docs locally:
